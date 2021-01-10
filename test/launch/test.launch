@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+    <include
+    file="$(find gazebo_ros)/launch/empty_world.launch" />
+    
+
+  
+
+    <arg name="world" default="empty"/> 
+    <arg name="paused" default="false"/>
+    <arg name="use_sim_time" default="true"/>
+    <arg name="gui" default="true"/>
+    <arg name="headless" default="false"/>
+    <arg name="debug" default="false"/>
+
+      <!-- <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find test)/worlds/test.world"/>
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    <arg name="gui" value="$(arg gui)"/>
+    <arg name="headless" value="$(arg headless)"/>
+    <arg name="debug" value="$(arg debug)"/>
+  </include> -->
+  
+
+    <param name="mybot/robot_description" command="$(find xacro)/xacro.py '$(find test)/urdf/test.urdf'"/>
+
+  
+
+    <node name="mybot_spawn" pkg="gazebo_ros"  type="spawn_model" ns="mybot" output="screen"
+        args="-urdf -param robot_description -model mybot" />
+
+ 
+    <!-- convert joint states to TF transforms for rviz, etc -->
+    <node name="robot_state_publisher" ns="mybot" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
+
+    <param name="robot_description" command="$(find xacro)/xacro.py '$(find test)/urdf/test.urdf'"/>
+    <!--remap from="/joint_states" to="/mybot/joint_states" /-->
+    </node>
+
+
+    <node pkg="joint_state_publisher"
+        type="joint_state_publisher"
+        name="joint_state_publisher" ns="/mybot">
+        <param name="rate" value="50" />
+    </node>
+
+    
+
+</launch>
